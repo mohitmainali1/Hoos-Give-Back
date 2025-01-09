@@ -38,3 +38,5 @@ Led a team of five as a Software Architect to create a Project Management Applic
 This repo is set up to allow you to customize how you want to run it, locally or deployed on a cloud service. If you're running locally, I highly recommend setting up a virtual environment `python -m venv myenvname` and activating it with `myenvname\Scrpits\activate`. Install the requirements on there with `pip install -r requirements.txt`.
 
 Everything you need to customize will be in `pmaproject/settings.py` for database configuration, allowed hosts, Amazon S3 setup, and keys needed to interact with Google OAuth 2.0 API. Simply change the dummy values of the variables to actual values that will work. Additionally, key values for Google OAuth will be needed in lines 22-24 of `communityservice/views.py`.
+
+`.github/workflows/django.yml` for Continuous Integration with GitHub Actions. Currently cleared and reset for a fresh repo clone, which will show as failing under this branch.
