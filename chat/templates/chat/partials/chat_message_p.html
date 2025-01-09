@@ -1,0 +1,32 @@
+<!-- REFERENCES
+Title: Basic Setup with Htmx - Real-Time Chat app - Part 2
+Author: Andreas Jud
+URL: https://www.youtube.com/watch?v=Q7N2oJTnThA&list=PL5E1F5cTSTtRSP3Qb8-gZ-Hm5AXp3VKvu&index=2 -->
+
+<!-- This partial template is used to render a chat message with a fade-in animation. -->
+<div class="fade-in-up">
+    {% include 'chat/chat_message.html' %} <!-- Includes the main chat message template -->
+</div>
+
+<style>
+    /* Animation for fading in and moving up elements */
+    @keyframes fadeInAndUp {
+        from { opacity: 0; transform: translateY(12px); }
+        to { opacity: 1; transform: translateY(0px); }
+    }
+    .fade-in-up {
+        animation: fadeInAndUp 0.6s ease; /* Applies the animation */
+    }
+</style>
+
+<!-- JavaScript block for handling additional client-side functionality -->
+{% block javascript %}
+    <script>
+        // Automatically scrolls to the bottom of the chat container to display the latest messages
+        function scrollToBottom() {
+            const container = document.getElementById('chat container'); // Retrieves the chat container element
+            container.scrollTop = container.scrollHeight; // Scrolls to the bottom of the container
+        }
+        scrollToBottom(); // Invokes the function
+    </script>
+{% endblock %}

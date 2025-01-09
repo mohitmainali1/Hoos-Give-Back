@@ -1,0 +1,14 @@
+{% extends 'communityservice/base.html' %}
+
+{% block title %}Delete Project{% endblock %}
+
+{% block content %}
+<h2>Are you sure you want to delete the project "{{ project.title }}"?</h2>
+<p>This action cannot be undone.</p>
+
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

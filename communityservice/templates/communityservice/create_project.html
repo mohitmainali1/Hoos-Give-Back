@@ -1,0 +1,150 @@
+{% extends 'communityservice/base.html' %}
+
+{% block title %}Create Project{% endblock %}
+
+{% block content %}
+<h2>Create a New Project</h2>
+<p class="fst-italic">Note: When adding collaborators make sure to add yourself as well; otherwise, the calendar feature may not recognize the project.</p>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Create Project</button>
+</form>
+{% endblock %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Project</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 400px;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        label {
+            display: block;
+            text-align: left;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        input, select, button {
+            width: 100%;
+            max-width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        input[type="text"],
+        input[type="date"],
+        input[type="time"] {
+            display: block;
+            width: 100%;
+        }
+        input:focus, select:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            padding: 10px 15px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Create New Project</h2>
+        <form method="POST">
+            {% csrf_token %}
+
+            <!-- Title -->
+            <label for="id_title">Project Title</label>
+            {{ form.title }}
+
+            <!-- Collaborators -->
+            <label for="id_collaborators">Collaborators</label>
+            <div class="checkbox-group">
+                {% for checkbox in form.collaborators %}
+                <div class="checkbox-item">
+                    {{ checkbox.tag }}
+                    <label for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Project Date -->
+            <label for="id_project_date">Project Date</label>
+            {{ form.project_date }}
+
+            <!-- Start Time -->
+            <label for="id_start_time">Start Time</label>
+            {{ form.start_time }}
+
+            <!-- End Time -->
+            <label for="id_end_time">End Time</label>
+            {{ form.end_time }}
+
+            <!-- Submit Button -->
+            <button type="submit">Create Project</button>
+        </form>
+    </div>
+
+    <!-- Include Flatpickr -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        flatpickr("input[type='date']", {
+            dateFormat: "Y-m-d",
+        });
+
+        flatpickr("input[type='time']", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+        });
+    </script>
+</body>
+</html>

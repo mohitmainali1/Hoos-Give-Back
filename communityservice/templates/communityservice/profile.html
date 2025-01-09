@@ -1,0 +1,12 @@
+{% extends 'communityservice/base.html' %}
+{% load static %}
+{% block content %}
+<div class="card mx-auto" style="width: 24rem;">
+    <div class="card-body text-center">
+        <h5 class="card-title">{{ name }}</h5>
+        <p class="card-text">{{ email }}</p>
+        <p class="card-text">Joined on: {{ date_joined|date:"F j, Y" }}</p>
+        <a href="/" class="btn btn-primary">Go Back</a>
+    </div>
+</div>
+{% endblock %}

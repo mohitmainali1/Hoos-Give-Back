@@ -1,0 +1,67 @@
+{% extends "communityservice/base.html" %}
+
+{% block title %}
+Home - Project Management App
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    {% if user.is_authenticated %}
+        <!-- Create project button -->
+        <div class="mb-4">
+            <a href="{% url 'create_project' %}" class="btn btn-primary">Create Project</a>
+            <a href="{% url 'project_calendar' %}" class="btn btn-success">Project Calendar</a>
+        </div>
+
+        <!-- Projects the user owns -->
+        <h2>Projects You Own:</h2>
+        <ul>
+            {% for project in projects_you_own %}
+                <li>
+                    <a href="{% url 'project_detail' project.id %}">{{ project.title }}</a>
+                    - {{ project.description }}
+                </li>
+            {% empty %}
+                <p>You do not own any projects yet.</p>
+            {% endfor %}
+        </ul>
+
+        <!-- Projects the user is collaborating in -->
+        <h2>Projects You Are a Part Of:</h2>
+        <ul>
+            {% for project in projects_you_are_a_part_of %}
+                <li>
+                    <a href="{% url 'project_detail' project.id %}">{{ project.title }}</a>
+                    - {{ project.description }}
+                </li>
+            {% empty %}
+                <p>You are not part of any projects yet.</p>
+            {% endfor %}
+        </ul>
+
+        <!-- Other projects -->
+        <h2>Other Projects:</h2>
+        <ul>
+            {% for project in other_projects %}
+                <li>
+                    <a href="{% url 'project_detail' project.id %}">{{ project.title }}</a>
+                    - {{ project.description }}
+                </li>
+            {% empty %}
+                <p>No other projects available.</p>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <!-- Anonymous users -->
+        <h2>All Projects:</h2>
+        <ul>
+            {% for project in other_projects %}
+                <li>{{ project.title }} - {{ project.description }}</li>
+            {% empty %}
+                <p>No projects available.</p>
+            {% endfor %}
+        </ul>
+        <p class="mt-3">Please <a href="{% url 'google_login' %}">log in</a> to view project details or participate in projects.</p>
+    {% endif %}
+</div>
+{% endblock %}

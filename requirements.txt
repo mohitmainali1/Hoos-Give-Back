@@ -1,0 +1,26 @@
+# Core dependencies
+Django
+djangorestframework-simplejwt==5.2.2
+channels
+daphne
+django-htmx
+django-bootstrap-v5
+django-allauth
+django_social_share
+
+# Deployment and hosting
+gunicorn
+django-heroku
+psycopg2
+boto3
+django-storages
+
+# Authentication and Google API
+python-dotenv
+google-api-python-client
+google-auth
+google-auth-oauthlib
+
+# Utility libraries
+requests
+Pillow

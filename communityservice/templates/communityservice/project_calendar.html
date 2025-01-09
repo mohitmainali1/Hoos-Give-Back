@@ -1,0 +1,52 @@
+{% extends 'communityservice/base.html' %}
+
+{% block title %}Project Calendar{% endblock %}
+
+{% block content %}
+    <style>
+        .calendar {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px auto;
+        }
+        .calendar th, .calendar td {
+            border: 1px solid gray;
+            text-align: center;
+            padding: 10px;
+        }
+        .calendar th {
+            background-color: white;
+            font-weight: bold;
+        }
+        .calendar td {
+            height: 100px;
+            vertical-align: top;
+        }
+        .calendar td span {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .calendar div {
+            font-size: 0.9em;
+        }
+        .navigation {
+            text-align: center;
+            margin: 20px;
+        }
+        .navigation a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: blue;
+        }
+        .navigation a:hover {
+            text-decoration: underline;
+        }
+    </style>
+
+    <div class="navigation">
+        <a href="{% url 'project_calendar' prev_year prev_month %}">Previous</a>
+        <a href="{% url 'project_calendar' next_year next_month %}">Next</a>
+    </div>
+    {{ calendar|safe }}
+{% endblock %}

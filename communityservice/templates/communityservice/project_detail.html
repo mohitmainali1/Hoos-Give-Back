@@ -1,0 +1,124 @@
+{% extends 'communityservice/base.html' %}
+{% load social_share %}
+{% block title %}Project Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ project.title }}</h2>
+    <p>{{ project.description }}</p>
+    <p><strong>Owner:</strong> {{ project.owner.first_name }} {{ project.owner.last_name }}</p>
+    <p><strong>Collaborators:</strong>
+        {% for collaborator in project.collaborators.all %}
+            {{ collaborator.first_name }} {{ collaborator.last_name }}{% if not forloop.last %}, {% endif %}
+        {% empty %}
+            No collaborators.
+        {% endfor %}
+    </p>
+
+    {% if user.is_authenticated %}
+        {% if user == project.owner %}
+            <!-- Buttons for project owner -->
+            <div class="btn-group mt-3" role="group">
+                <a href="{% url 'add_collaborators' project.id %}" class="btn btn-primary">Add Collaborators</a>
+                <a href="{% url 'upload_document' project.id %}" class="btn btn-success">Upload Document</a>
+                <a href="{% url 'approve_requests' project.id %}" class="btn btn-warning">Approve Requests</a>
+                <a href="{% url 'transfer_ownership' project.id %}" class="btn btn-info">Transfer Ownership</a>
+                <a href="{% url 'delete_project' project.id %}" class="btn btn-danger">Delete Project</a>
+                <a href="{% url 'delete_documents' project.id %}" class="btn btn-secondary">Delete Your Files</a>
+                <a href="{% url 'chat:chat' project.title %}" class="btn btn-dark">Chat</a>
+            </div>
+        {% elif user in project.collaborators.all %}
+            <!-- Buttons for collaborators -->
+            <div class="btn-group mt-3" role="group">
+                <a href="{% url 'upload_document' project.id %}" class="btn btn-success">Upload Document</a>
+                <a href="{% url 'leave_project' project.id %}" class="btn btn-danger">Leave Project</a>
+                <a href="{% url 'delete_documents' project.id %}" class="btn btn-secondary">Delete Your Files</a>
+                <a href="{% url 'chat:chat' project.title %}" class="btn btn-dark">Chat</a>
+            </div>
+        {% elif user.is_site_admin %}
+            <!-- Buttons for site admins -->
+            <div class="btn-group mt-3" role="group">
+                <a href="{% url 'delete_project' project.id %}" class="btn btn-danger">Delete Project</a>
+                <a href="{% url 'delete_documents' project.id %}" class="btn btn-secondary">Delete Your Files</a>
+            </div>
+        {% else %}
+            <!-- Options for non-collaborators -->
+            <div class="mt-3">
+                {% if has_requested %}
+                    <p class="text-info">You have requested to join this project.</p>
+                    <form method="post" action="{% url 'revoke_request' project.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-secondary">Revoke Request</button>
+                    </form>
+                {% else %}
+                    <form method="post" action="{% url 'request_to_join' project.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-info">Request to Join</button>
+                    </form>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <!-- Documents Section: Only visible to owner and collaborators -->
+        {% if user == project.owner or user in project.collaborators.all or user.is_site_admin %}
+            <div class="mt-5">
+                <h3>Documents</h3>
+                <form method="get" action="{% url 'search_documents' project.id %}" class="mb-3">
+                    <input type="text" name="q" class="form-control" placeholder="Search by title or keywords" required>
+                    <button type="submit" class="btn btn-primary mt-2">Search</button>
+                </form>
+                <ul>
+                    {% for document in documents|dictsort:"title" %}
+                        <li>
+                            <a href="{{ document.file.url }}">{{ document.title }}</a> - uploaded by {{ document.uploader.first_name }} {{ document.uploader.last_name }} at {{ document.uploaded_at|date:'Y-m-d H:i' }} - {{ document.keywords }}
+                        </li>
+                    {% empty %}
+                        <p>No documents uploaded yet.</p>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="mt-5">
+                <h3>Tasks</h3>
+                {% if not user.is_site_admin %}
+                    <form method="post" action="{% url 'add_task' project.id %}" class="mb-3">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="text" name="task_title" class="form-control" placeholder="Task title" required>
+                            <button type="submit" class="btn btn-success">Add Task</button>
+                        </div>
+                    </form>
+                {% endif %}
+                <ul>
+                    {% for task in tasks %}
+                        <li>
+                            {{ task.title }}
+                            {% if task.is_completed %}
+                                <span class="badge bg-success">Completed</span>
+                            {% elif not user.is_site_admin %}
+                                <form method="post" action="{% url 'complete_task' task.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">Mark as Complete</button>
+                                </form>
+                            {% endif %}
+                            <form method="post" action="{% url 'delete_task' task.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                            </form>
+                        </li>
+                    {% empty %}
+                        <p>No tasks added yet.</p>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="mt-5">
+                <h3>Advertise this content:</h3>
+                {% post_to_facebook project.title "Post to Facebook!" %}
+            </div>
+        {% endif %}
+    {% else %}
+        <!-- Message for anonymous users -->
+        <p>You must be logged in to interact with this project.</p>
+    {% endif %}
+</div>
+{% endblock %}

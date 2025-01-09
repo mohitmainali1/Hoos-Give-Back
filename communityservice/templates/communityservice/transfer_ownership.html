@@ -1,0 +1,26 @@
+{% extends "communityservice/base.html" %}
+
+{% block title %}Transfer Ownership{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Transfer Ownership of "{{ project.title }}"</h2>
+    <p>Select a collaborator to transfer ownership of this project to:</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="new_owner" class="form-label">Select Collaborator</label>
+            <select name="new_owner" id="new_owner" class="form-control" required>
+                {% for collaborator in collaborators %}
+                    <option value="{{ collaborator.id }}">
+                        {{ collaborator.first_name }} {{ collaborator.last_name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Transfer Ownership</button>
+        <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

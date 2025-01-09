@@ -1,0 +1,115 @@
+<!-- REFERENCES
+Title: Basic Setup with Htmx - Real-Time Chat app - Part 2
+Author: Andreas Jud
+URL: https://www.youtube.com/watch?v=Q7N2oJTnThA&list=PL5E1F5cTSTtRSP3Qb8-gZ-Hm5AXp3VKvu&index=2 -->
+
+<!-- This is the main chat template for the Django app. It structures the chat page, enabling users to communicate in real-time if they are authorized collaborators on the project. -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Django template tags for loading static files and Bootstrap dependencies -->
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {% load static %}
+
+    <!-- Linking CSS styles -->
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+
+    <!-- JavaScript libraries for functionality -->
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://unpkg.com/htmx.org@2.0.2"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind CSS for custom styling -->
+    <style type="text/tailwindcss">
+        label {
+            @apply hidden;
+        }
+        .textarea, textarea, input {
+            @apply w-full rounded-lg py-4 px-5 bg-gray-100;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation bar for site navigation -->
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+        <div class="container-fluid">
+            <!-- Left side link to home -->
+            <a class="navbar-brand" href="/">Hoos Give Back</a>
+
+            <!-- Right side user authentication options -->
+            <ul class="navbar-nav ms-auto">
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <span class="nav-link">
+                            {{ user.first_name }}
+                            {% if user.is_site_admin %} (admin){% endif %}
+                        </span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'google_login' %}">Login</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Render chat interface if user is a collaborator or the project owner -->
+        {% if user == project.owner or user in project.collaborators.all %}
+            <wrapper class="block max-w-2xl mx-auto my-10 px-6">
+                <div id="chat_window" class="h-[30rem] flex flex-col bg-black shadow-2xl relative p-1">
+                    <div class="flex justify-center text-white bg-primary p-2 top-0 z-10">
+                        <span id="chat-name" class="pr-1">{{ group_name }} Chat</span>
+                    </div>
+                    <div id='chat_container' class="overflow-y-auto grow">
+                        <ul id='chat_messages' class="flex flex-col justify-end gap-2 p-4">
+                            {% for message in chat_messages reversed %}
+                                {% include 'chat/chat_message.html' %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="bottom-0 z-10 p-2 bg-primary">
+                        <div class="flex items-center px-2 py-2">
+                            <form id="chat_message_form" class="w-full"
+                                  hx-post="{% url 'chat:chat' group_name %}"
+                                  hx-target="#chat_messages"
+                                  hx-swap="beforeend"
+                                  _="on htmx:afterRequest reset() me">
+                              {% csrf_token %}
+                              {{ form }}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </wrapper>
+        {% else %}
+            <!-- Message for unauthorized users -->
+            <p>You must be part of the project to view the chat.</p>
+        {% endif %}
+
+        <!-- Back to project details link -->
+        <div>
+            <a href="{% url 'project_detail' project_id %}" class="btn btn-secondary position-absolute bottom-20 start-50 translate-middle-x">Back to Project</a>
+        </div>
+    </main>
+
+    <!-- Footer with disclaimers -->
+    <footer class="text-center mt-5">
+        <p>&copy; 2024 Project Management App. All rights reserved.</p>
+        <p class="fst-italic">Note: This system is a project and is not monitored. No real information should be submitted.</p>
+    </footer>
+</body>

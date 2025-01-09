@@ -1,0 +1,27 @@
+/* Navbar links */
+.navbar {
+    font-size: 1.1rem;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.nav-link {
+    color: white;
+}
+
+.nav-link:hover {
+    color: #ddd;
+    text-decoration: underline;
+}
+
+/* Footer */
+footer {
+    background-color: #333;
+    color: white;
+    padding: 1rem 0;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}

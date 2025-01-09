@@ -1,0 +1,27 @@
+{% extends 'communityservice/base.html' %}
+
+{% block content %}
+<h1>Approve Join Requests for {{ project.title }}</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {% if pending_requests %}
+        <ul>
+            {% for request in pending_requests %}
+                <li>
+                    <input type="checkbox" name="approve_requests" value="{{ request.id }}" id="approve_{{ request.id }}">
+                    <label for="approve_{{ request.id }}">
+                        {{ request.user.first_name }} {{ request.user.last_name }} - {{ request.user.email }}
+                    </label>
+                </li>
+            {% endfor %}
+        </ul>
+        <button type="submit" name="action" value="approve" class="btn btn-primary">Approve Selected</button>
+        <button type="submit" name="action" value="deny" class="btn btn-danger">Deny Selected</button>
+        <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary">Back to Project</a>
+    {% else %}
+        <p>No pending requests to approve.</p>
+        <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary">Back to Project</a>
+    {% endif %}
+</form>
+{% endblock %}
